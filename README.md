@@ -1,11 +1,11 @@
 
-# ♟️ The Engine: Hybrid CNN-Transformer Chess Engine
+# The Engine: Hybrid CNN-Transformer Chess Engine
 
 An 88-million parameter custom neural chess engine. 
 
 This engine uses a **Convolutional Neural Network (CNN)** to extract spatial features from the board, which are then projected into a **Transformer Encoder** to predict the next move based on the game's sequence history.
 
-## 🧠 Architecture Overview
+## Architecture Overview
 
 <p align="center"><img src="assets/Architecture.png" width="600" height="400"></p>
 
@@ -13,7 +13,7 @@ This engine uses a **Convolutional Neural Network (CNN)** to extract spatial fea
 * **Linear Projection:** The CNN's output is flattened and passed through a linear projection layer. This translates the board state into a 1024-dimensional embedding token, formatted for the Transformer's LayerNorm.
 * **Transformer:** The board tokens are stacked into a sequence representing the game history up to the max sequence length. Multi-headed self-attention allows the model to weigh historical context (e.g., remembering a trapped piece from 10 moves ago) to evaluate the current position. This is projected onto 4096 move options, masked to consider only legal moves, and greedily decoded for the final prediction.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Install Dependencies
 
@@ -57,15 +57,15 @@ Once the script is running, it will wait for you to type commands. You act as th
 Simply add the engine to your GUI. This will vary based on which GUI you prefer to use, consult their documentation for help. 
 * *Note:* Ensure you pass the `-u` (unbuffered) flag to Python in your engine configuration (`python -u runner.py`).
 
-## 📊 Current Evaluation
+## Current Evaluation
 
 Rating: ~600 Elo (Calculated via Ordo BayesElo by playing Stockfish Level 0)
 
-## 🛢️ Dataset Used
+## Dataset Used
 
 A dataset of ~1 million games from the [Lichess Open Database](https://database.lichess.org/) (From 2014 - July) was used to train this model.
 
-## 🗺️ Roadmap
+## Roadmap
 [x] Supervised Learning from Dataset
 
 [x] UCI Protocol Integration
