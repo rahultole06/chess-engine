@@ -3,7 +3,7 @@
 
 An 88-million parameter custom neural chess engine. 
 
-This engine uses a **Convolutional Neural Network (CNN)** to extract spatial features from the board, which are then projected into a **Transformer Encoder** to predict the next move based on the game's sequence history.
+This engine uses a **Convolutional Neural Network (CNN)** to extract spatial features from the board, which are then projected into a **Transformer** to predict the next move based on the game's sequence history.
 
 ## Architecture Overview
 
