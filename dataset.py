@@ -1,3 +1,8 @@
+"""
+Author: Rahul Tole
+Custom Dataset for uncompressing game files & converting into tensors
+"""
+
 import io
 import chess
 import chess.pgn
@@ -8,6 +13,10 @@ import zstandard as zstd
 from helper import move_to_idx, board_to_tensor
 
 class Dataset(IterableDataset):
+    """
+    Custom dataset for converting .pgn.zst chess files into board tensors
+    Returns games and actual moves played
+    """
     def __init__(self, zst_filepath, max_seq_len, max_games=None):
         self.zst_filepath = zst_filepath
         self.max_seq_len = max_seq_len
@@ -15,7 +24,11 @@ class Dataset(IterableDataset):
 
     def __iter__(self):
         with open(self.zst_filepath, 'rb') as fh:
+
+            # uncompresses .zst file
             dctx = zstd.ZstdDecompressor()
+
+            # iterates games and yields tensors
             with dctx.stream_reader(fh) as reader:
                 text_stream = io.TextIOWrapper(reader, encoding='utf-8')
                 
@@ -29,6 +42,8 @@ class Dataset(IterableDataset):
                         break
                     
                     board = game.board()
+
+                    # stores history & actual moves played
                     game_history = []
                     labels = []
                     
@@ -51,6 +66,7 @@ class Dataset(IterableDataset):
                     history_tensor = torch.stack(game_history)
                     labels_tensor = torch.tensor(labels, dtype=torch.long)
 
+                    # Pads/Crops game history & labels upto max sequence length
                     padded_history = torch.zeros((self.max_seq_len, 14, 8, 8), dtype=torch.float32)
                     padded_history[:seq_len] = history_tensor
 

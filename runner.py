@@ -1,3 +1,8 @@
+"""
+Author: Rahul Tole
+Testing/Running the model
+"""
+
 import sys
 import chess
 import torch
@@ -8,12 +13,16 @@ from helper import board_to_tensor
 MAX_SEQ_LEN = 256
 
 def load_engine(model_path):
+    """
+    Returns initialized model
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Loading engine on: {device}")
     
     d_model = 1024
     num_heads = 8
     num_layers = 6
+
     model = Engine(d_model, num_heads, num_layers, MAX_SEQ_LEN).to(device)
     
     checkpoint = torch.load(model_path, weights_only=False)
@@ -24,6 +33,7 @@ def load_engine(model_path):
     return model, device
 
 def main():
+    # Trained model savefile
     model_path = "checkpoints/chess_net_supervised.pth"
     try:
         model, device = load_engine(model_path)
@@ -32,8 +42,18 @@ def main():
         sys.exit(1)
 
     board = chess.Board()
-    game_history_tensors = []
+    game_history_tensors = [] # Stores game history
 
+    """
+    Interface commands:
+
+    uci: Initialize
+    isready: Initialize
+    ucinewgame: Starts new game
+    position startpos moves (moves): Input current game history including your move
+    go: Prompt engine to make a move
+    quit: Exit
+    """
     while True:
         line = sys.stdin.readline().strip()
         

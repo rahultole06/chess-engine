@@ -1,8 +1,16 @@
+"""
+Author: Rahul Tole
+CNN-Transformer hybrid model for Chess
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 class ConvNet(nn.Module):
+    """
+    Simple CNN Convolutions that outputs a flat board state tensor
+    """
     def __init__(self):
         super(ConvNet, self).__init__()
 
@@ -24,10 +32,14 @@ class ConvNet(nn.Module):
         return x
 
 class Engine(nn.Module):
+    """
+    Main Engine that runs convolutions and feeds it into a transformer
+    Returns 4096-dim vector representation all possible chess moves
+    """
     def __init__(self, d_model, num_heads, num_layers, max_seq_len):
         super().__init__()
 
-        self.cnn = ConvNet()
+        self.cnn = ConvNet() # CNN model
 
         self.pos_embedding = nn.Embedding(max_seq_len, d_model)
 
@@ -41,7 +53,7 @@ class Engine(nn.Module):
 
         self.transformer = nn.TransformerEncoder(encoder_layer=encoder_layer, num_layers=num_layers)
 
-        self.lm_head = nn.Linear(d_model, 4096)
+        self.lm_head = nn.Linear(d_model, 4096) # out projection
 
     def forward(self, board_sequence):
         B, S_L, C, H, W = board_sequence.size()
@@ -51,9 +63,11 @@ class Engine(nn.Module):
 
         x = cnn_pass.view(B, S_L, -1)
         
+        # positional embeddings
         positions = torch.arange(0, S_L, device=x.device).unsqueeze(0)
         x = x + self.pos_embedding(positions)
 
+        # stops attending to future tokens
         causal_mask = nn.Transformer.generate_square_subsequent_mask(S_L).to(x.device)
 
         transformer_pass = self.transformer(x, mask=causal_mask, is_causal=True)

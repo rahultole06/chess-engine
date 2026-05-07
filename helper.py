@@ -1,11 +1,22 @@
+"""
+Author: Rahul Tole
+Useful utility functions
+"""
+
 import chess
 import torch
 import numpy as np
 
 def move_to_idx(move: chess.Move) -> int:
+    """
+    Converts moves to 4096-based index
+    """
     return (move.from_square * 64) + move.to_square
 
 def get_best_move(board, model, input_tensor):
+    """
+    Returns highest scoring move from all legal moves
+    """
     with torch.no_grad():
         prediction = model(input_tensor)[0]
 
@@ -24,6 +35,15 @@ def get_best_move(board, model, input_tensor):
     return best_move
 
 def board_to_tensor(board):
+    """
+    Converts a chess board into a 14x8x8 1-hot tensor
+
+    Channels:
+    0-5: White pieces
+    6-11: Black pieces
+    12: Player to move
+    13: Castling & Enpassant
+    """
     tensor = np.zeros((14, 8, 8), dtype=np.float32)
 
     piece_to_channel = {
